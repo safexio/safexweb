@@ -1,0 +1,38 @@
+{
+  "name": "safex",
+  "version": "0.0.0",
+  "description": "",
+  "main": "bootstrap.js",
+  "scripts": {
+    "start": "webpack-dev-server --hot --progress --colors",
+    "build": "webpack --progress --colors"
+  },
+  "keywords": [
+    "safex",
+    "maidsafe",
+    "safenetwork",
+    "exchange",
+    "decentralized"
+  ],
+  "author": "Ephi Blanshey",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^5.0.9",
+    "babel-loader": "^5.0.0",
+    "json-loader": "^0.5.1",
+    "react": "^0.13.1",
+    "react-hot-loader": "^1.2.4",
+    "react-router": "^0.13.2",
+    "webpack": "^1.7.3",
+    "webpack-dev-server": "^1.8.0"
+  },
+  "dependencies": {
+    "bitcore": "^0.11.7",
+    "jquery": "^2.1.3",
+    "lodash": "^3.6.0",
+    "moment": "^2.10.2",
+    "promise": "^7.0.0",
+    "react": "^0.13.1",
+    "reflux": "^0.2.7"
+  }
+}
