@@ -2,7 +2,6 @@ var webpack = require('webpack');
 
 module.exports = {
   entry: [
-    'webpack/hot/only-dev-server',
     "./src/js/app.js"
   ],
   output: {
@@ -11,7 +10,7 @@ module.exports = {
   },
   module: {
     loaders: [
-      {test: /\.jsx?$/, loaders: ['react-hot', 'babel'], exclude: /node_modules/},
+      {test: /\.jsx?$/, loaders: ['babel'], exclude: /node_modules/},
       {test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader'},
       {test: /\.json$/, loader: "json"},
       {test: /\.css$/, loader: "style!css"},
@@ -22,7 +21,7 @@ module.exports = {
     modulesDirectories: ["web_modules", "node_modules", "js"]
   },
   plugins: [
-    new webpack.NoErrorsPlugin()
+    new webpack.optimize.UglifyJsPlugin({minimize: true})
   ]
 
 };
