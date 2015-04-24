@@ -23,9 +23,16 @@ var PrivKeyTable = React.createClass({
     }));
 
     this.unsubscribe = privKeyStore.listen(this._onPrivKeyListChange);
+
+    this.debounce = _.debounce(this._setBlankState, 200);
+    window.addEventListener('resize', this.debounce, false);
   },
   componentWillUnmount: function() {
+    window.removeEventListener('resize', this.debounce, false);
     this.unsubscribe();
+  },
+  _setBlankState: function() {
+    this.setState({});
   },
   _onPrivKeyListChange: function(privKeys) {
     this.setState({
@@ -35,7 +42,7 @@ var PrivKeyTable = React.createClass({
   _deletePrivKey: function(e) {
     var privKey = e.target.getAttribute('data-priv-key');
 
-    if (confirm('You are about to permanantely remove this private key from your wallet. Are you sure you wish to continue?')) {
+    if (confirm('You are about to permanently remove this private key from your wallet. Are you sure you wish to continue?')) {
       privKeyActions.deletePrivKey(privKey);
       this.context.router.transitionTo('/');
     }
@@ -53,6 +60,8 @@ var PrivKeyTable = React.createClass({
         obj.confirmedBalance = '...';
       }
 
+      obj.added = Moment(obj.added).format('YYYY-MM-DD HH:mm:ss');
+
       return obj;
     });
 
@@ -62,15 +71,35 @@ var PrivKeyTable = React.createClass({
         return b.added - a.added;
       });
     }
+    
+    var privKeyStyle = {};
+
+    if (window.innerWidth < 992) {
+      privKeyStyle.textOverflow = 'ellipsis';
+      privKeyStyle.overflow = 'hidden';
+      privKeyStyle.width = 225;
+    }
 
     var rows = privKeys.map(function(keyObj, index) {
+      if (window.innerWidth < 768) {
+        var div = (
+          <div>
+            <div style={privKeyStyle}>{keyObj.privKey}</div>
+            <div><b>Added:</b> {keyObj.added}</div>
+            <div><b>Total balance:</b> {keyObj.balance}</div>
+            <div><b>Confirmed balance:</b> {keyObj.confirmedBalance}</div>
+          </div>);
+      } else {
+        var div = <div style={privKeyStyle}>{keyObj.privKey}</div>
+      }
+
       return (
         <tr key={keyObj.privKey}>
-          <td className="hidden-xs hidden-sm">{Moment(keyObj.added).format('YYYY-MM-DD HH:mm:ss')}</td>
-          <td>{keyObj.privKey}</td>
-          <td className="hidden-xs hidden-sm">{keyObj.balance}</td>
-          <td className="hidden-xs hidden-sm">{keyObj.confirmedBalance}</td>
-          <td style={{whiteSpace: 'nowrap'}}>
+          <td className="hidden-xs">{keyObj.added}</td>
+          <td>{div}</td>
+          <td className="hidden-xs">{keyObj.balance}</td>
+          <td className="hidden-xs">{keyObj.confirmedBalance}</td>
+          <td style={{whiteSpace: 'nowrap', textAlign: 'right'}}>
             <Link to="transactions" params={{address: keyObj.address}} className="btn btn-primary btn-xs">Explore</Link>&nbsp;
             <button className="btn btn-danger btn-xs" onClick={this._deletePrivKey} data-priv-key={keyObj.privKey}>Delete</button>&nbsp;
             <Link to="spend" params={{address: keyObj.address}} className="btn btn-success btn-xs">Spend</Link>
@@ -83,11 +112,11 @@ var PrivKeyTable = React.createClass({
       <table className="table table-striped table-hover">
         <thead>
           <tr>
-            <th className="hidden-xs hidden-sm">Added</th>
-            <th><span style={{width:300, overflow: 'hidden', textOverflow: 'ellipsis'}}>Private Key</span></th>
-            <th className="hidden-xs hidden-sm">Balance</th>
-            <th className="hidden-xs hidden-sm">Confirmed</th>
-            <th>Actions</th>
+            <th className="hidden-xs">Added</th>
+            <th style={{width:300, overflow: 'hidden', textOverflow: 'ellipsis'}}><span>Private Key</span></th>
+            <th className="hidden-xs">Balance</th>
+            <th className="hidden-xs">Confirmed</th>
+            <th style={{textAlign: 'right'}}>Actions</th>
           </tr>
         </thead>
         <tbody>
