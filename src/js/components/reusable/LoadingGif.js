@@ -8,7 +8,7 @@ var LoadingGif = React.createClass({
     };
 
     return (
-      <div style={style}>Loading<br/><img src="../img/loading.gif" /></div>
+      <div style={style}>Loading<br/><img src="./img/loading.gif" /></div>
     );
   }
 });
