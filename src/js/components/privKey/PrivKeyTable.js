@@ -66,11 +66,11 @@ var PrivKeyTable = React.createClass({
     var rows = privKeys.map(function(keyObj, index) {
       return (
         <tr key={keyObj.privKey}>
-          <td>{Moment(keyObj.added).format('YYYY-MM-DD HH:mm:ss')}</td>
+          <td className="hidden-xs hidden-sm">{Moment(keyObj.added).format('YYYY-MM-DD HH:mm:ss')}</td>
           <td>{keyObj.privKey}</td>
-          <td>{keyObj.balance}</td>
-          <td>{keyObj.confirmedBalance}</td>
-          <td>
+          <td className="hidden-xs hidden-sm">{keyObj.balance}</td>
+          <td className="hidden-xs hidden-sm">{keyObj.confirmedBalance}</td>
+          <td style={{whiteSpace: 'nowrap'}}>
             <Link to="transactions" params={{address: keyObj.address}} className="btn btn-primary btn-xs">Explore</Link>&nbsp;
             <button className="btn btn-danger btn-xs" onClick={this._deletePrivKey} data-priv-key={keyObj.privKey}>Delete</button>&nbsp;
             <Link to="spend" params={{address: keyObj.address}} className="btn btn-success btn-xs">Spend</Link>
@@ -83,10 +83,10 @@ var PrivKeyTable = React.createClass({
       <table className="table table-striped table-hover">
         <thead>
           <tr>
-            <th>Added</th>
-            <th>Private Key</th>
-            <th>Balance</th>
-            <th>Confirmed</th>
+            <th className="hidden-xs hidden-sm">Added</th>
+            <th><span style={{width:300, overflow: 'hidden', textOverflow: 'ellipsis'}}>Private Key</span></th>
+            <th className="hidden-xs hidden-sm">Balance</th>
+            <th className="hidden-xs hidden-sm">Confirmed</th>
             <th>Actions</th>
           </tr>
         </thead>
