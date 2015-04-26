@@ -24,7 +24,7 @@ var TransactionSingle = React.createClass({
 
       var length = input.addresses.length;
       if (length === 1) {
-        inputs.push(input.addresses[0]/* + ' - ' + input.amount*/);
+        inputs.push(input.addresses[0] + ' - ' + Unit.fromSatoshis(input.amount).toBTC());
       } else {
         var count = 1;
         input.addresses.forEach(function(address) {
@@ -32,7 +32,7 @@ var TransactionSingle = React.createClass({
             inputs.push('[ ' + address);
           } else {
             if (count === length) {
-              address += ' ]';
+              address += ' ]' + ' - ' + Unit.fromSatoshis(input.amount).toBTC();
             }
             inputs.push(address);
           }
@@ -50,7 +50,7 @@ var TransactionSingle = React.createClass({
       output.addresses.some(function(address) {
         if (address === ourAddress) {
           if (transaction.type) {
-            // It's a spend AND receive. Just don't display a color.
+            // It's a spend AND receive. Keep it a spend (it's probably change address)
           } else {
             transaction.type = 'receive';
           }
@@ -86,16 +86,19 @@ var TransactionSingle = React.createClass({
       color = '2F8912';
     }
 
+    // Each input, output needs its own key
+    var i = 0, o = 0;
+
     return (
       <tr style={color ? {borderRight: '5px solid #'+color} : {}}>
         <td>
           {inputs.map(function(input) {
-            return <span key={input}>{input}<br /></span>
+            return <span key={'input-'+i++}>{input}<br /></span>
           })}
         </td>
         <td>
           {outputs.map(function(output) {
-            return <span key={output}>{output}<br /></span>
+            return <span key={'output-'+o++}>{output}<br /></span>
           })}
         </td>
         <td>{transaction.time}<br /><b>Total:</b> {Unit.fromSatoshis(transaction.amount).toBTC()} BTC<br /><b>Confirmations:</b> {transaction.confirmations}</td>
