@@ -1,0 +1,36 @@
+.PrivKeyTable {
+
+  .privKey-col {
+
+    width: 40%;
+
+    .privKey-sm {
+      @include ellipsis-overflow(250px);
+    }
+
+    .privKey-xs {
+      @include ellipsis-overflow(190px);
+    }
+
+  }
+
+  .actions-col {
+    white-space: nowrap;
+    text-align: right;
+    @include tablet-desktop {
+      .btn, button {
+        margin-left: 5px;
+      }
+    }
+    @include phone {
+      width: 40%;
+      white-space: normal;
+      .btn, button {
+        display: block;
+        width: 100%;
+        margin-bottom: 5px;
+      }
+    }
+  }
+
+}

@@ -4147,3 +4147,39 @@ button.close {
 @media print {
   .hidden-print {
     display: none !important; } }
+
+.PrivKeyTable .privKey-col {
+  width: 40%; }
+  .PrivKeyTable .privKey-col .privKey-sm {
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    word-wrap: break-word;
+    width: 250px; }
+  .PrivKeyTable .privKey-col .privKey-xs {
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    word-wrap: break-word;
+    width: 190px; }
+.PrivKeyTable .actions-col {
+  white-space: nowrap;
+  text-align: right; }
+  @media (min-width: 768px) {
+    .PrivKeyTable .actions-col .btn, .PrivKeyTable .actions-col button {
+      margin-left: 5px; } }
+  @media (max-width: 767px) {
+    .PrivKeyTable .actions-col {
+      width: 40%;
+      white-space: normal; }
+      .PrivKeyTable .actions-col .btn, .PrivKeyTable .actions-col button {
+        display: block;
+        width: 100%;
+        margin-bottom: 5px; } }
+
+body {
+  min-width: 435px; }

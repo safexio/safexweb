@@ -1,0 +1,36 @@
+@mixin ellipsis-overflow($width) {
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  word-wrap: break-word;
+  width: $width;
+}
+
+// Media queries
+@mixin phone {
+  @media (max-width: 767px) {
+    @content;
+  }
+}
+@mixin tablet {
+  @media (min-width: 768px) and (max-width: 991px) {
+    @content;
+  }
+}
+@mixin phone-tablet {
+  @media (max-width: 991px) {
+    @content;
+  }
+}
+@mixin desktop {
+  @media (min-width: 992px) {
+    @content;
+  }
+}
+@mixin tablet-desktop {
+  @media (min-width: 768px) {
+    @content;
+  }
+}

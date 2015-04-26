@@ -10,11 +10,11 @@ var PrivKeyBox = React.createClass({
   },
   render: function() {
 
-    var button = <button onClick={this._generateNewKeypair} className="btn btn-warning btn-xs" type="input" style={{float: 'right' }}>Generate New Keypair</button>;
+    var button = <button onClick={this._generateNewKeypair} className="btn btn-warning btn-xs pull-right" type="input">Generate <span className="hidden-xs">New </span>Keypair</button>;
 
     return (
       <div className="panel panel-default">
-        <div className="panel-heading">Bitcoin Private Keys {button}</div>
+        <div className="panel-heading"><span className="hidden-xs">Bitcoin </span>Private Keys {button}</div>
         <div className="panel-body">
           <PrivKeyImport />
           <PrivKeyTable />

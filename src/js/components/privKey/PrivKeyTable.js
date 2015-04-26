@@ -71,37 +71,30 @@ var PrivKeyTable = React.createClass({
         return b.added - a.added;
       });
     }
-    
-    var privKeyStyle = {};
-
-    if (window.innerWidth < 992) {
-      privKeyStyle.textOverflow = 'ellipsis';
-      privKeyStyle.overflow = 'hidden';
-      privKeyStyle.width = 225;
-    }
 
     var rows = privKeys.map(function(keyObj, index) {
-      if (window.innerWidth < 768) {
-        var div = (
-          <div>
-            <div style={privKeyStyle}>{keyObj.privKey}</div>
-            <div><b>Added:</b> {keyObj.added}</div>
-            <div><b>Total balance:</b> {keyObj.balance}</div>
-            <div><b>Confirmed balance:</b> {keyObj.confirmedBalance}</div>
-          </div>);
-      } else {
-        var div = <div style={privKeyStyle}>{keyObj.privKey}</div>
-      }
-
       return (
         <tr key={keyObj.privKey}>
           <td className="hidden-xs">{keyObj.added}</td>
-          <td>{div}</td>
+          <td className="privKey-col">
+            <div className="visible-md visible-lg">
+              {keyObj.privKey}
+            </div>
+            <div className="visible-sm">
+              <div className="privKey-sm">{keyObj.privKey}</div>
+            </div>
+            <div className="visible-xs">
+              <div className="privKey-xs">{keyObj.privKey}</div>
+              <div><b>Added:</b> {keyObj.added}</div>
+              <div><b>Total balance:</b> {keyObj.balance}</div>
+              <div><b>Confirmed balance:</b> {keyObj.confirmedBalance}</div>
+            </div>
+          </td>
           <td className="hidden-xs">{keyObj.balance}</td>
           <td className="hidden-xs">{keyObj.confirmedBalance}</td>
-          <td style={{whiteSpace: 'nowrap', textAlign: 'right'}}>
-            <Link to="transactions" params={{address: keyObj.address}} className="btn btn-primary btn-xs">Explore</Link>&nbsp;
-            <button className="btn btn-danger btn-xs" onClick={this._deletePrivKey} data-priv-key={keyObj.privKey}>Delete</button>&nbsp;
+          <td className="actions-col">
+            <Link to="transactions" params={{address: keyObj.address}} className="btn btn-primary btn-xs">Explore</Link>
+            <button className="btn btn-danger btn-xs" onClick={this._deletePrivKey} data-priv-key={keyObj.privKey}>Delete</button>
             <Link to="spend" params={{address: keyObj.address}} className="btn btn-success btn-xs">Spend</Link>
           </td>
         </tr>
@@ -109,14 +102,14 @@ var PrivKeyTable = React.createClass({
     }.bind(this));
 
     return (
-      <table className="table table-striped table-hover">
+      <table className="PrivKeyTable table table-striped table-hover">
         <thead>
           <tr>
             <th className="hidden-xs">Added</th>
-            <th style={{width:300, overflow: 'hidden', textOverflow: 'ellipsis'}}><span>Private Key</span></th>
+            <th className="privKey-col"><span>Private Key</span></th>
             <th className="hidden-xs">Balance</th>
             <th className="hidden-xs">Confirmed</th>
-            <th style={{textAlign: 'right'}}>Actions</th>
+            <th className="actions-col">Actions</th>
           </tr>
         </thead>
         <tbody>
