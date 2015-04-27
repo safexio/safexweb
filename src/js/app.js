@@ -25,9 +25,9 @@ var App = React.createClass({
 });
 
 var routes = (
-  <Route name="app" path="/" handler={App}>
-    <Route name="transactions" path="transactions/:address" handler={TransactionBox} ignoreScrollBehavior />
-    <Route name="spend" path="spend/:address" handler={SpendBox} ignoreScrollBehavior />
+  <Route name="app" path="/" handler={App} ignoreScrollBehavior>
+    <Route name="transactions" path="transactions/:address" handler={TransactionBox} />
+    <Route name="spend" path="spend/:address" handler={SpendBox} />
   </Route>
 );
 
