@@ -47,7 +47,7 @@ var SpendBox = React.createClass({
     }
   },
 
-  _calculateFee: function(displayWarnings) {
+  _calculateFee: function() {
     var error,
       fields = this._getFields();
 
@@ -144,7 +144,7 @@ var SpendBox = React.createClass({
     }
 
     var error = Address.getValidationError(address, config.network);
-    
+
     if (!error) {
       group.removeClass('has-error');
       return false;

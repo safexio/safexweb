@@ -1,6 +1,8 @@
 // Vendor
-@import "vendor/_bootswatch.scss";
+@import "vendor/_bootswatchVariables";
 @import "vendor/_bootstrap.scss";
+@import "vendor/_bootswatch.scss";
+
 
 // App
 @import "mixins.scss";
