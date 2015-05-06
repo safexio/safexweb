@@ -267,14 +267,19 @@ var SpendBox = React.createClass({
               <div className="col-sm-3">
                 <input onChange={this._onChangeAmount} ref="amount" type="number" className="form-control" placeholder="0.89922" required min="0.0001" step="0.0001" max={spendableBtc} />
               </div>
-              <div className="col-sm-3">
+              <div className="col-sm-3 hidden-xs">
+                <button type="submit" className="btn btn-warning" disabled={this.state.submitting ? 'disabled' : ''}>Send</button>
+              </div>
+            </div>
+            <div className="form-group visible-xs">
+              <div className="col-sm-offset-2 col-sm-3">
                 <button type="submit" className="btn btn-warning" disabled={this.state.submitting ? 'disabled' : ''}>Send</button>
               </div>
             </div>
             <div className="form-group">
-              <label className="col-sm-2 control-label">Fee</label>
+              <label className="col-sm-2 control-label">Fee <span className="hidden-lg hidden-md hidden-sm">{Unit.fromSatoshis(this.state.fee).toBTC()} BTC</span></label>
 
-              <p className="col-sm-10 form-control-static">{Unit.fromSatoshis(this.state.fee).toBTC()} BTC</p>
+              <p className="hidden-xs col-sm-10 form-control-static">{Unit.fromSatoshis(this.state.fee).toBTC()} BTC</p>
             </div>
           </form>
         </div>
