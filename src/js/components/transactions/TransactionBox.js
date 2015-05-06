@@ -60,8 +60,8 @@ var TransactionBox = React.createClass({
         <table className="table table-striped table-hover">
           <thead>
             <tr>
-              <th>From</th>
-              <th>To</th>
+              <th className="visible-md visible-lg">From</th>
+              <th><span className="hidden-md hidden-lg">From /</span> To</th>
               <th>Meta</th>
             </tr>
           </thead>

@@ -3,13 +3,10 @@ var Unit = require('bitcore').Unit;
 var Moment = require('moment')
 
 var TransactionSingle = React.createClass({
-  render: function() {
-    var transaction = this.props.transaction,
-      ourAddress = this.props.address;
-    
-    transaction.time = Moment(transaction.time).format('YYYY-MM-DD HH:mm:ss');
+  _formatInputs: function(transaction, ourAddress) {
 
     var inputs = [];
+
     // An input can have many addresses if sent from multisig.
     // Multisig addresses are grouped with [ ].
     transaction.inputs.forEach(function(input) {
@@ -24,7 +21,7 @@ var TransactionSingle = React.createClass({
 
       var length = input.addresses.length;
       if (length === 1) {
-        inputs.push(input.addresses[0] + ' - ' + Unit.fromSatoshis(input.amount).toBTC());
+        inputs.push(input.addresses[0] + ': ' + Unit.fromSatoshis(input.amount).toBTC());
       } else {
         var count = 1;
         input.addresses.forEach(function(address) {
@@ -32,7 +29,7 @@ var TransactionSingle = React.createClass({
             inputs.push('[ ' + address);
           } else {
             if (count === length) {
-              address += ' ]' + ' - ' + Unit.fromSatoshis(input.amount).toBTC();
+              address += ' ]' + ': ' + Unit.fromSatoshis(input.amount).toBTC();
             }
             inputs.push(address);
           }
@@ -41,8 +38,13 @@ var TransactionSingle = React.createClass({
         });
       }
     });
-    
+
+    return inputs;
+  },
+  _formatOutputs: function(transaction, ourAddress) {
+
     var outputs = [];
+
     // An input can have many addresses if sent from multisig.
     // Multisig addresses are grouped with [ ].
     transaction.outputs.forEach(function(output) {
@@ -61,7 +63,7 @@ var TransactionSingle = React.createClass({
 
       var length = output.addresses.length;
       if (length === 1) {
-        outputs.push(output.addresses[0] + ' - ' + Unit.fromSatoshis(output.amount).toBTC());
+        outputs.push(output.addresses[0] + ': ' + Unit.fromSatoshis(output.amount).toBTC());
       } else {
         var count = 1;
         output.addresses.forEach(function(address) {
@@ -69,7 +71,7 @@ var TransactionSingle = React.createClass({
             outputs.push('[ ' + address);
           } else {
             if (count === length) {
-              address += ' ] - '  + Unit.fromSatoshis(output.amount).toBTC();
+              address += ' ]: '  + Unit.fromSatoshis(output.amount).toBTC();
             }
             outputs.push(address);
           }
@@ -79,6 +81,18 @@ var TransactionSingle = React.createClass({
       }
     });
 
+    return outputs;
+  },
+  render: function() {
+    var transaction = this.props.transaction,
+      ourAddress = this.props.address;
+    
+    transaction.time = Moment(transaction.time).format('YYYY-MM-DD HH:mm:ss');
+
+    var inputs = this._formatInputs(transaction, ourAddress);
+    var outputs = this._formatOutputs(transaction, ourAddress);
+
+    // Color for the right border, red if spent, green if received
     var color;
     if (transaction.type === 'spend') {
       color = 'FF0039';
@@ -89,19 +103,24 @@ var TransactionSingle = React.createClass({
     // Each input, output needs its own key
     var i = 0, o = 0;
 
+    // Further format the inputs/outputs for display
+    var inputOutput = inputs.map(function(input) {
+      return <span key={'input-'+i++}>{input}<br /></span>
+    });
+    var outputOutput = outputs.map(function(output) {
+      return <span key={'output-'+o++}>{output}<br /></span>
+    });
+
     return (
       <tr style={color ? {borderRight: '5px solid #'+color} : {}}>
-        <td>
-          {inputs.map(function(input) {
-            return <span key={'input-'+i++}>{input}<br /></span>
-          })}
+        <td className="visible-lg visible-md">
+          {inputOutput}
         </td>
         <td>
-          {outputs.map(function(output) {
-            return <span key={'output-'+o++}>{output}<br /></span>
-          })}
+          <span className="hidden-lg hidden-md"><b>From:</b><br/>{inputOutput}</span>
+          <span className="hidden-lg hidden-md"><b>To:</b><br/></span>{outputOutput}
         </td>
-        <td>{transaction.time}<br /><b>Total:</b> {Unit.fromSatoshis(transaction.amount).toBTC()} BTC<br /><b>Confirmations:</b> {transaction.confirmations}</td>
+        <td>{transaction.time}<br /><b>Total:</b> {Unit.fromSatoshis(transaction.amount).toBTC()} BTC<br /><b><span className="hidden-xs hidden-ms">Confirmations:</span><span className="hidden-lg hidden-md" title="Confirmations">Confs:</span></b> {transaction.confirmations}</td>
       </tr>
     );
   }
