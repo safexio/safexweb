@@ -92,12 +92,9 @@ var TransactionSingle = React.createClass({
     var inputs = this._formatInputs(transaction, ourAddress);
     var outputs = this._formatOutputs(transaction, ourAddress);
 
-    // Color for the right border, red if spent, green if received
-    var color;
-    if (transaction.type === 'spend') {
-      color = 'FF0039';
-    } else if (transaction.type === 'receive') {
-      color = '2F8912';
+    // Just to make sure no one messes this up (we use it as a css class below)
+    if (transaction.type !== 'spend' && transaction.type !== 'receive') {
+      throw new Error('Got invalid transaction type: ', transaction.type);
     }
 
     // Each input, output needs its own key
@@ -112,7 +109,7 @@ var TransactionSingle = React.createClass({
     });
 
     return (
-      <tr style={color ? {borderRight: '5px solid #'+color} : {}}>
+      <tr className={'TransactionSingle '+transaction.type}>
         <td className="visible-lg visible-md">
           {inputOutput}
         </td>

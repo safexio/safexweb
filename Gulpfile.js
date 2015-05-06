@@ -18,7 +18,7 @@ gulp.task('webpack', function() {
 });
 
 // Watch css only
-gulp.task('watch', function() {
+gulp.task('watch', ['css'], function() {
   gulp.watch('src/sass/**/*.scss', ['css']);
 });
 

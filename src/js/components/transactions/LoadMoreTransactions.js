@@ -6,15 +6,9 @@ var LoadMoreTransactions = React.createClass({
     transactionActions.fetchTransactions(this.props.address, this.props.nextRange);
   },
   render: function() {
-    var style = {
-      textAlign: 'center',
-      fontSize: 16,
-      cursor: 'pointer'
-    };
-
     return (
-      <tr className="info">
-        <td colSpan="3" style={style} onClick={this._loadMoreTransactions}>Load more transactions</td>
+      <tr className="info LoadMoreTransactions">
+        <td className="loadMoreArea" colSpan="3" onClick={this._loadMoreTransactions}>Load more transactions</td>
       </tr>
     );
   }

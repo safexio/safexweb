@@ -4181,5 +4181,24 @@ a.list-group-item-danger.active:hover, a.list-group-item-danger.active:focus {
         width: 100%;
         margin-bottom: 5px; } }
 
+.TransactionSingle {
+  border-right: 5px solid; }
+  .TransactionSingle.spend {
+    border-right-color: #FF0039; }
+  .TransactionSingle.receive {
+    border-right-color: #2F8912; }
+
+.LoadMoreTransactions .loadMoreArea {
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer; }
+
+.LoadingGif {
+  text-align: center;
+  font-size: 22px; }
+
+.AlertArea .link {
+  cursor: pointer; }
+
 body {
   min-width: 435px; }

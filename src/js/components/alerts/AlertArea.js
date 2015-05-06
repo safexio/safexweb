@@ -46,7 +46,7 @@ var AlertArea = React.createClass({
         message = 'Your transaction for address ' + obj.address + ' is broadcasting.';
       } else if (obj.status === 'failed') {
         className += ' alert-danger';
-        message = <span>Your transaction for address {obj.address} failed to broadcast. <a style={{cursor: 'pointer'}} onClick={this._rebroadcast} data-address={obj.address} data-serialized={obj.serialized}>Click here to try again.</a></span>;
+        message = <span>Your transaction for address {obj.address} failed to broadcast. <a className="link" onClick={this._rebroadcast} data-address={obj.address} data-serialized={obj.serialized}>Click here to try again.</a></span>;
         close = <button onClick={this._removeBroadcastedTransaction} type="button" className="close" data-address={obj.serialized}>&times;</button>;
       } else if (obj.status === 'broadcasted') {
         className += ' alert-success alert-dismissible';
@@ -61,7 +61,7 @@ var AlertArea = React.createClass({
       alerts.push(alert);
     }.bind(this));
 
-    return <div>{alerts}</div>;
+    return (<div className="AlertArea">{alerts}</div>);
   }
 });
 

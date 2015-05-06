@@ -1,0 +1,12 @@
+.TransactionSingle {
+
+  border-right: 5px solid;
+
+  &.spend {
+    border-right-color: #FF0039;
+  }
+
+  &.receive {
+    border-right-color: #2F8912;
+  }
+}

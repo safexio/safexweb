@@ -78,7 +78,7 @@ var TransactionBox = React.createClass({
         <div className="panel-heading">Transactions for <b>{this.state.address}</b></div>
         <div className="panel-body">
           {body}
-          <div style={{textAlign: 'right'}}><i>Time is displayed in your local timezone</i></div>
+          <div className="text-right"><em>Time is displayed in your local timezone</em></div>
         </div>
       </div>
     );
