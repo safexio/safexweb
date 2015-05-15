@@ -87,7 +87,7 @@ var TransactionSingle = React.createClass({
     var transaction = this.props.transaction,
       ourAddress = this.props.address;
     
-    transaction.time = Moment(transaction.time).format('YYYY-MM-DD HH:mm:ss');
+    var time = Moment(transaction.time).format('YYYY-MM-DD HH:mm:ss');
 
     var inputs = this._formatInputs(transaction, ourAddress);
     var outputs = this._formatOutputs(transaction, ourAddress);
@@ -117,7 +117,7 @@ var TransactionSingle = React.createClass({
           <span className="hidden-lg hidden-md"><b>From:</b><br/>{inputOutput}</span>
           <span className="hidden-lg hidden-md"><b>To:</b><br/></span>{outputOutput}
         </td>
-        <td>{transaction.time}<br /><b>Total:</b> {Unit.fromSatoshis(transaction.amount).toBTC()} BTC<br /><b><span className="hidden-xs hidden-ms">Confirmations:</span><span className="hidden-lg hidden-md" title="Confirmations">Confs:</span></b> {transaction.confirmations}</td>
+        <td>{time}<br /><b>Total:</b> {Unit.fromSatoshis(transaction.amount).toBTC()} BTC<br /><b><span className="hidden-xs hidden-ms">Confirmations:</span><span className="hidden-lg hidden-md" title="Confirmations">Confs:</span></b> {transaction.confirmations}</td>
       </tr>
     );
   }

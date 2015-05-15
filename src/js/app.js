@@ -1,16 +1,20 @@
 'use strict';
 
-var React = require('react');
-var Router = require('react-router');
-var RouteHandler = Router.RouteHandler;
-var Route = Router.Route;
-var PrivKeyBox = require('components/privKey/PrivKeyBox');
-var TransactionBox = require('components/transactions/TransactionBox');
-var AlertArea = require('components/alerts/AlertArea');
-var SpendBox = require('components/spend/SpendBox');
+var React = require('react'),
+  Router = require('react-router'),
+  RouteHandler = Router.RouteHandler,
+  Route = Router.Route,
+  PrivKeyBox = require('components/privKey/PrivKeyBox'),
+  TransactionBox = require('components/transactions/TransactionBox'),
+  AlertArea = require('components/alerts/AlertArea'),
+  SpendBox = require('components/spend/SpendBox'),
+  blockchainWebsocket = require('utils/blockchainWebsocket');
 
 // Add react globally so we can use the chrome developer tools
 window.React = React;
+
+// Let's initialize what we need for the app, starting with the websocket connection
+blockchainWebsocket.connect();
 
 var App = React.createClass({
   render: function() {

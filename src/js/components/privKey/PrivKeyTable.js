@@ -11,34 +11,39 @@ var PrivKeyTable = React.createClass({
   contextTypes: {
     router: React.PropTypes.func
   },
+
   getInitialState: function() {
     return {
-      privKeys: privKeyStore.getInitialPrivKeys()
+      privKeys: []
     };
   },
-  componentDidMount: function() {
-    // Update address balances on load
-    privKeyActions.updateBalances(this.state.privKeys.map(function(obj) {
-      return obj.address;
-    }));
 
+  componentDidMount: function() {
+    // Subscribe to privKeyStore updates
     this.unsubscribe = privKeyStore.listen(this._onPrivKeyListChange);
+
+    // Now that we're listening, get initial keys -- state should update
+    privKeyStore.loadInitialPrivKeys();
 
     this.debounce = _.debounce(this._setBlankState, 200);
     window.addEventListener('resize', this.debounce, false);
   },
+
   componentWillUnmount: function() {
     window.removeEventListener('resize', this.debounce, false);
     this.unsubscribe();
   },
+
   _setBlankState: function() {
     this.setState({});
   },
+
   _onPrivKeyListChange: function(privKeys) {
     this.setState({
       privKeys: privKeys
     });
   },
+
   _deletePrivKey: function(e) {
     var privKey = e.target.getAttribute('data-priv-key');
 
@@ -47,6 +52,7 @@ var PrivKeyTable = React.createClass({
       this.context.router.transitionTo('/');
     }
   },
+
   render: function() {
     var privKeys = _.clone(this.state.privKeys, true);
 

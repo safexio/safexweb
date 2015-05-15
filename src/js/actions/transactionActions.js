@@ -1,36 +1,19 @@
-var Reflux = require('reflux');
-var bitcore = require('bitcore');
-var commonActions = require('./commonActions');
-var blockchainFetcher = require('utils/blockchainFetcher');
-var config = require('config');
+var Reflux = require('reflux'),
+  bitcore = require('bitcore'),
+  commonActions = require('./commonActions'),
+  blockchainFetcher = require('utils/blockchainFetcher'),
+  config = require('config');
 
-var Actions = Reflux.createActions({
-  "fetchTransactions": {children: ['completed', 'failed']}
-});
+function formatTransactions(data) {
+  // Create an object of transaction objects
+  var transactions = {};
 
-// Supply an array of addresses to get their balances
-Actions.fetchTransactions.listen(function(address, nextRange) {
-  var promise = blockchainFetcher.transactions(address, nextRange)
-    .done(this.completed)
-    .fail(this.failed);
-});
-
-// Don't continue with failed propagation. Just handle error.
-Actions.fetchTransactions.failed.shouldEmit = function() {
-  commonActions.error('There was a problem fetching transactions.');
-  console.log('An error occurred while fetching transactions for address:', arguments);
-  return false;
-};
-
-// Extract only the data we need: {address: balance, ...}
-Actions.fetchTransactions.completed.preEmit = function(data, message, response) {
-  // Create an array of transaction objects
-  var transactions = data.map(function(obj) {
+  data.forEach(function(obj) {
     var transaction = {};
     transaction.confirmations = obj.confirmations;
     transaction.hash = obj.hash;
     transaction.amount = obj.amount;
-    transaction.time = obj.chain_received_at;
+    transaction.time = +Date.parse(obj.chain_received_at);
     transaction.inputs = obj.inputs.map(function(input) {
       return {
         addresses: input.addresses,
@@ -44,11 +27,52 @@ Actions.fetchTransactions.completed.preEmit = function(data, message, response) 
         spent: output.spent
       };
     });
-    
-    return transaction;
+
+    transactions[transaction.hash] = transaction;
   });
   
-  return {transactions, nextRange: response.getResponseHeader('Next-Range')};
+  return transactions;
+}
+
+var Actions = Reflux.createActions({
+  "fetchTransactions": {children: ['completed', 'failed']},
+  "fetchMoreTransactions": {children: ['completed', 'failed']}
+});
+
+// Supply an address to get its transactions
+Actions.fetchTransactions.listen(function(address) {
+  var promise = blockchainFetcher.transactions(address)
+    .done(this.completed)
+    .fail(this.failed);
+});
+
+Actions.fetchTransactions.failed.listen(function() {
+  commonActions.error('There was a problem fetching transactions.');
+});
+
+// Extract only the data we need: {address: balance, ...}
+Actions.fetchTransactions.completed.preEmit = function(data, message, response) {
+  var transactions = formatTransactions(data);
+
+  return [transactions, response.getResponseHeader('Next-Range')];
+};
+
+// Supply an address and the nextRange to get more transactions
+Actions.fetchMoreTransactions.listen(function(address, nextRange) {
+  var promise = blockchainFetcher.transactions(address, nextRange)
+    .done(this.completed)
+    .fail(this.failed);
+});
+
+Actions.fetchMoreTransactions.failed.listen(function() {
+  commonActions.error('There was a problem fetching more transactions.');
+});
+
+// Extract only the data we need: {address: balance, ...}
+Actions.fetchMoreTransactions.completed.preEmit = function(data, message, response) {
+  var transactions = formatTransactions(data);
+
+  return [transactions, response.getResponseHeader('Next-Range')];
 };
 
 module.exports = Actions;

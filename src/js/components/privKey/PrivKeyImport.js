@@ -4,9 +4,11 @@ var privKeyActions = require('actions/privKeyActions');
 var uiStore = require('stores/uiStore');
 
 var PrivKeyImport = React.createClass({
+
   getInitialState: function() {
     return uiStore.getStore();
   },
+
   _addPrivKey: function(e) {
     e.preventDefault();
 
@@ -19,17 +21,21 @@ var PrivKeyImport = React.createClass({
       privKeyActions.addPrivKey(privKeyEl.value.trim());
     }
   },
+
   componentDidMount: function() {
     this.unsubscribe = uiStore.listen(this._clearInput);
   },
+
   componentWillUnmount: function() {
     this.unsubscribe();
   },
+
   _clearInput: function(uiState) {
     if (uiState.privKey.clearInput) {
       this.refs.privKeyInput.getDOMNode().value = '';
     }
   },
+
   render: function() {
     return (
       <form onSubmit={ this._addPrivKey }>

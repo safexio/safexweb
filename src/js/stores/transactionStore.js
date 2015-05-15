@@ -5,11 +5,16 @@ var transactionActions = require('actions/transactionActions');
 
 var transactionStore = Reflux.createStore({
 
-  store: {
-    fetching: false,
-    address: null,
-    nextRange: null,
-    transactions: []
+  store: {},
+
+  resetStore: function() {
+    this.store = {
+      fetchingInitial: false,
+      address: null,
+      nextRange: null,
+      transactions: {},
+      updateAvailable: false
+    };
   },
 
   // Initial setup
@@ -17,24 +22,31 @@ var transactionStore = Reflux.createStore({
     this.listenToMany(transactionActions);
   },
 
-  onFetchTransactions: function(address, nextRange) {
-    this.store.fetching = true;
-    this.store.address = address;
-
-    // If nextRange wasn't provided, this means we're fetching initial transactions so reset existing ones.
-    // If nextRange is provided, it means we're just fetching more transactions.
-    if (!nextRange) {
-      this.store.transactions = [];
-      this.store.nextRange = null;
+  onFetchTransactions: function(address, isInitial) {
+    // If this is an initial fetch, reset the store to remove old transactions, if need be
+    if (isInitial) {
+      this.resetStore();
+      this.store.fetchingInitial = isInitial;
+      this.store.address = address;
     }
 
     this.trigger(this.store);
   },
 
-  onFetchTransactionsCompleted: function(obj) {
-    this.store.fetching = false;
-    this.store.transactions = this.store.transactions.concat(obj.transactions);
-    this.store.nextRange = obj.nextRange;
+  onFetchTransactionsCompleted: function(transactions, nextRange) {
+    // New transactions overwrite old ones
+    console.log('inside initial fetch completed');
+    this.store.transactions = _.assign(this.store.transactions, transactions);
+    
+    this.store.fetchingInitial = false;
+    this.store.nextRange = nextRange;
+
+    this.trigger(this.store);
+  },
+
+  onFetchMoreTransactionsCompleted: function(transactions, nextRange) {
+    this.store.transactions = _.assign(this.store.transactions, transactions);
+    this.store.nextRange = nextRange;
 
     this.trigger(this.store);
   },

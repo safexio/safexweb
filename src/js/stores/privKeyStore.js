@@ -1,11 +1,11 @@
-import Reflux from 'reflux';
-import _ from 'lodash';
-
-var privKeyActions = require('actions/privKeyActions');
-var commonActions = require('actions/commonActions');
-var uiActions = require('actions/uiActions');
-var bitcore = require('bitcore');
-var config = require('config');
+var Reflux = require('reflux'),
+  _ = require('lodash'),
+  privKeyActions = require('actions/privKeyActions'),
+  commonActions = require('actions/commonActions'),
+  uiActions = require('actions/uiActions'),
+  bitcore = require('bitcore'),
+  config = require('config'),
+  blockchainWebsocket = require('utils/blockchainWebsocket');
 
 // For now we will store everything in local storage
 var localStorageKey = "privateKeys";
@@ -15,6 +15,7 @@ var privKeyStore = Reflux.createStore({
   init: function() {
     this.listenToMany(privKeyActions);
   },
+
   onAddPrivKey: function(privKey) {
     if (!privKey) {
       privKey = new bitcore.PrivateKey(null, config.network);
@@ -43,22 +44,40 @@ var privKeyStore = Reflux.createStore({
     }].concat(this.privKeys));
 
     uiActions.clearPrivKeyInput();
-    privKeyActions.updateBalances(this.privKeys.map(function(obj) {
-      return obj.address;
-    }));
+
+    this.updateBalances(address);
+
+    // Subscribe to this address
+    this.subscribeAddress(address);
   },
+
+  updateBalances: function(addresses) {
+    privKeyActions.updateBalances(addresses ? addresses : this.getArrayOfAddresses());
+  },
+
+  getArrayOfAddresses: function() {
+    return this.privKeys.map(function(obj) {
+      return obj.address;
+    });
+  },
+
   onDeletePrivKey: function(privKey) {
     this.updatePrivKeyList(this.privKeys.filter(function(obj){
       return obj.privKey !== privKey;
     }));
   },
-  onUpdateBalances: function() {
+
+  onUpdateBalances: function(addresses) {
     this.updatePrivKeyList(this.privKeys.map(function(obj) {
-      obj.balance = null;
+      // If this privkey is in the list of updating balance addresses, set it to null
+      if (addresses.indexOf(obj.address) > -1) {
+        obj.balance = null;
+      }
 
       return obj;
     }));
   },
+
   onUpdateBalancesCompleted: function(addressMap) {
     var privKeys = this.privKeys.map(function(obj) {
       if (addressMap.hasOwnProperty(obj.address)) {
@@ -71,6 +90,7 @@ var privKeyStore = Reflux.createStore({
 
     this.updatePrivKeyList(privKeys);
   },
+
   // called whenever we change the transactions list. normally this would mean a database API call
   updatePrivKeyList: function(privKeys){
     localStorage.setItem(localStorageKey, JSON.stringify(privKeys));
@@ -79,9 +99,11 @@ var privKeyStore = Reflux.createStore({
     this.privKeys = privKeys;
     this.trigger(privKeys); // sends the updated list to all listening components
   },
+
   storeHasPrivKey: function(privKey) {
     return !!this.getByPrivKey(privKey);
   },
+
   getByPrivKey: function(privKey) {
     var obj = _.find(this.privKeys, function(obj) {
       return obj.privKey === privKey;
@@ -89,9 +111,11 @@ var privKeyStore = Reflux.createStore({
 
     return obj;
   },
+
   storeHasAddress: function(address) {
     return !!this.getByAddress(address);
   },
+
   getByAddress: function(address) {
     var obj = _.find(this.privKeys, function(obj) {
       return obj.address === address;
@@ -99,11 +123,21 @@ var privKeyStore = Reflux.createStore({
 
     return obj;
   },
+
+  subscribeAddress: function(address) {
+    blockchainWebsocket.subscribeAddress(address);
+  },
+
   // this will be called by all listening components as they register their listeners
-  getInitialPrivKeys: function() {
+  loadInitialPrivKeys: function() {
     var loadedKeys = localStorage.getItem(localStorageKey);
 
     this.privKeys = !loadedKeys ? [] : JSON.parse(loadedKeys);
+
+    this.updateBalances();
+
+    // Subscribe the addresses for live updates
+    this.subscribeAddress(this.getArrayOfAddresses());
 
     return this.privKeys;
   }

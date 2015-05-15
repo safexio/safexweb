@@ -3,7 +3,7 @@ var transactionActions = require('actions/transactionActions');
 
 var LoadMoreTransactions = React.createClass({
   _loadMoreTransactions: function() {
-    transactionActions.fetchTransactions(this.props.address, this.props.nextRange);
+    transactionActions.fetchMoreTransactions(this.props.address, this.props.nextRange);
   },
   render: function() {
     return (

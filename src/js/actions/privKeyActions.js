@@ -13,6 +13,11 @@ var Actions = Reflux.createActions({
 
 // Supply an array of addresses to get their balances
 Actions.updateBalances.listen(function(addresses) {
+  // Must be an array
+  if (!Array.isArray(addresses)) {
+    addresses = [addresses];
+  }
+
   if (addresses.length < 1) return;
 
   var promise = blockchainFetcher.addressBalances(addresses)

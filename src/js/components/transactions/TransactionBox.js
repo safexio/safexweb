@@ -1,34 +1,46 @@
-var React = require('react');
-
-var transactionStore = require('stores/transactionStore');
-var privKeyStore = require('stores/privKeyStore');
-var transactionActions = require('actions/transactionActions');
-var LoadingGif = require('components/reusable/LoadingGif');
-var TransactionSingle = require('components/transactions/TransactionSingle');
-var LoadMoreTransactions = require('components/transactions/LoadMoreTransactions');
+var React = require('react'),
+  _ = require('lodash'),
+  transactionStore = require('stores/transactionStore'),
+  privKeyStore = require('stores/privKeyStore'),
+  transactionActions = require('actions/transactionActions'),
+  LoadingGif = require('components/reusable/LoadingGif'),
+  TransactionSingle = require('components/transactions/TransactionSingle'),
+  LoadMoreTransactions = require('components/transactions/LoadMoreTransactions');
 
 var TransactionBox = React.createClass({
   contextTypes: {
     router: React.PropTypes.func
   },
+
   getInitialState: function() {
     return transactionStore.getStore();
   },
+
   componentWillMount: function() {
     this._fetchTransactions();
   },
+
   componentWillReceiveProps: function() {
     this._fetchTransactions();
   },
+
   componentDidMount: function() {
     this.unsubscribe = transactionStore.listen(this._onTransactionListChange);
   },
   componentWillUnmount: function() {
     this.unsubscribe();
+    transactionStore.resetStore;
   },
+
   _onTransactionListChange: function(state) {
     this.setState(state);
   },
+
+  /**
+   * We are here when initially fetching transactions for the first time
+   *
+   * @private
+   */
   _fetchTransactions: function() {
     var address = this.context.router.getCurrentParams().address;
 
@@ -37,23 +49,38 @@ var TransactionBox = React.createClass({
       return;
     }
 
-    transactionActions.fetchTransactions(address);
+    // Fetch initial transactions
+    transactionActions.fetchTransactions(address, true);
   },
+
   render: function() {
     var body;
 
     // We display the loading gif ONLY if we're fetching the initial transactions (meaning nextRange
     // is not yet set).
-    if (this.state.fetching && !this.state.nextRange) {
+    if (this.state.fetchingInitial) {
       body = <LoadingGif />;
     } else {
 
-      var transactions = this.state.transactions.map(function(transaction) {
-        return <TransactionSingle key={transaction.hash} transaction={transaction} address={this.state.address} />
+      var transactions = _.values(this.state.transactions);
+
+      // Sort in descending order
+      if (transactions.length > 1) {
+        transactions.sort(function(a, b) {
+          // desc order of time
+          return b.time - a.time;
+        });
+      }
+
+      // Make an array of table rows
+      var displayTransactions = [];
+
+      transactions.forEach(function(transaction, hash) {
+        displayTransactions.push(<TransactionSingle key={hash} transaction={transaction} address={this.state.address} />);
       }.bind(this));
 
-      if (transactions.length < 1) {
-        transactions = <tr><td colSpan="5">No transactions</td></tr>;
+      if (displayTransactions.length < 1) {
+        displayTransactions = <tr><td colSpan="5">No transactions.</td></tr>;
       }
 
       body = (
@@ -66,7 +93,7 @@ var TransactionBox = React.createClass({
             </tr>
           </thead>
           <tbody>
-            {transactions}
+            {displayTransactions}
             {this.state.nextRange ? <LoadMoreTransactions nextRange={this.state.nextRange} address={this.state.address} /> : null}
           </tbody>
         </table>

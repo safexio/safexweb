@@ -5,11 +5,12 @@ var PrivKeyTable = require('./PrivKeyTable');
 var privKeyActions = require('actions/privKeyActions');
 
 var PrivKeyBox = React.createClass({
+
   _generateNewKeypair: function() {
     privKeyActions.addPrivKey();
   },
-  render: function() {
 
+  render: function() {
     var button = <button onClick={this._generateNewKeypair} className="btn btn-warning btn-xs pull-right" type="input">Generate <span className="hidden-xs">New </span>Keypair</button>;
 
     return (
