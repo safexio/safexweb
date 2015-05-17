@@ -51,11 +51,10 @@ Actions.fetchUtxos.listen(function(privKey) {
 });
 
 // Don't continue with failed propagation. Just handle error.
-Actions.fetchUtxos.failed.shouldEmit = function() {
+Actions.fetchUtxos.failed.listen(function() {
   commonActions.error('There was a problem fetching unspent utxos.');
   console.log('An error occurred while fetching utxos for address:', arguments);
-  return false;
-};
+});
 
 // Extract only the data we need: {address: balance, ...}
 Actions.fetchUtxos.completed.preEmit = function(data) {
@@ -91,7 +90,7 @@ Actions.fetchUtxos.completed.preEmit = function(data) {
     // Add spendable amount
     spendable += obj.value;
 
-    // Add it to our lsit
+    // Add it to our list
     utxos.push(utxo);
   });
 

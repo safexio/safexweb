@@ -1,9 +1,11 @@
-var Reflux = require('reflux');
-
-var spendActions = require('actions/spendActions');
-var transactionCalculator = require('utils/transactionCalculator');
+var Reflux = require('reflux'),
+  spendActions = require('actions/spendActions'),
+  privKeyStore = require('stores/privKeyStore'),
+  transactionCalculator = require('utils/transactionCalculator');
 
 var spendStore = Reflux.createStore({
+
+  fetchedLatestUtxosAt: null,
 
   store: {
     fetching: false,
@@ -17,6 +19,26 @@ var spendStore = Reflux.createStore({
   // Initial setup
   init: function() {
     this.listenToMany(spendActions);
+
+    // Listen to changes in the privKeyStore and update spendable amount if necessary
+    this.listenTo(privKeyStore, this.privKeyStoreUpdated);
+  },
+
+  privKeyStoreUpdated: function(privKeyStore) {
+    if (!this.store.privKey) return;
+
+    // Find the privKey with this address
+    var privKey = _.find(privKeyStore, function(privKey) {
+      return privKey.address == this.store.privKey.address;
+    }, this)
+
+    // If priv key was not found or no balance updated
+    if (!privKey || !privKey.balanceLastUpdated) return;
+
+    // If never fetched latest transactions, or balance was updated after the last fetch, fetch them.
+    if (!this.fetchedLatestUtxosAt || this.fetchedLatestUtxosAt < privKey.balanceLastUpdated) {
+      spendActions.fetchUtxos(this.store.privKey);
+    }
   },
 
   onFetchUtxos: function(privKey) {

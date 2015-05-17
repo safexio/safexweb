@@ -1,18 +1,18 @@
-var React = require('react');
-var Bitcore = require('bitcore');
-var Unit = Bitcore.Unit;
-var Transaction = Bitcore.Transaction;
-var UnspentOutput = Bitcore.Transaction.UnspentOutput;
-var Address = Bitcore.Address;
-var Calculator = require('utils/transactionCalculator');
-var $ = require('jquery');
-var _ = require('lodash');
-
-var config = require('config');
-var privKeyStore = require('stores/privKeyStore');
-var spendStore = require('stores/spendStore');
-var spendActions = require('actions/spendActions');
-var commonActions = require('actions/commonActions');
+var React = require('react'),
+  Bitcore = require('bitcore'),
+  Unit = Bitcore.Unit,
+  Transaction = Bitcore.Transaction,
+  UnspentOutput = Bitcore.Transaction.UnspentOutput,
+  Address = Bitcore.Address,
+  Calculator = require('utils/transactionCalculator'),
+  $ = require('jquery'),
+  _ = require('lodash'),
+  config = require('config'),
+  privKeyStore = require('stores/privKeyStore'),
+  spendStore = require('stores/spendStore'),
+  spendActions = require('actions/spendActions'),
+  commonActions = require('actions/commonActions'),
+  SpendInfoTable = require('components/spend/SpendInfoTable');
 
 var SpendBox = React.createClass({
 
@@ -120,7 +120,7 @@ var SpendBox = React.createClass({
       group.addClass('has-error');
     } else if (amount == 0) {
       message = 'Please enter an amount more than 0.';
-      group.addClass('has-error');
+      //group.addClass('has-error');
     } else if (Unit.fromBTC(amount).toSatoshis() > this.state.spendable) {
       message = 'You cannot send more than ' + Unit.fromSatoshis(this.state.spendable).toBTC() + ' BTC';
       group.addClass('has-error');
@@ -181,6 +181,10 @@ var SpendBox = React.createClass({
     var fields = this._getFields(),
       error;
 
+    // Just do nothing if spendable or amount is 0
+    if (this.state.spendable === 0 || Number(fields.amount) === 0)
+      return;
+
     // Validations
     if (error = this._getValidationErrors(fields)) {
       commonActions.warning(error);
@@ -206,9 +210,10 @@ var SpendBox = React.createClass({
         return;
       }
 
-      // Setting state is no synchronous, but that's fine
+      // Setting state is not synchronous, but that's fine
       this.setState({submitting: true});
 
+      // Sign the transaction
       transaction.sign(this.state.privKey.privKey);
 
       var serializedTransaction = transaction.serialize();
@@ -237,22 +242,7 @@ var SpendBox = React.createClass({
       <div className="panel panel-default">
         <div className="panel-heading">Spend Bitcoin</div>
         <div className="panel-body">
-          <table className="table table-striped table-hover">
-            <tbody>
-            <tr>
-              <td>Send from address</td>
-              <td>{this.state.privKey.address}</td>
-            </tr>
-            <tr>
-              <td>Confirmed balance:</td>
-              <td>{Unit.fromSatoshis(this.state.privKey.confirmedBalance).toBTC()} BTC</td>
-            </tr>
-            <tr>
-              <td><abbr title="Total amount you can spend from this address, which takes into account the mining fee, unconfirmed unspent outputs, and unspendable multisig.">Maximum spend:</abbr></td>
-              <td>{spendableBtc} BTC</td>
-            </tr>
-            </tbody>
-          </table>
+          <SpendInfoTable privKey={this.state.privKey} spendableBtc={spendableBtc} />
           <form className="form-horizontal" onSubmit={this._onSubmit}>
             <div className="form-group" ref="sendToGroup">
               <label className="col-sm-2 control-label">Send to</label>
@@ -265,15 +255,15 @@ var SpendBox = React.createClass({
               <label className="col-sm-2 control-label">Amount</label>
 
               <div className="col-sm-3">
-                <input onChange={this._onChangeAmount} ref="amount" type="number" className="form-control" placeholder="0.89922" required min="0.0001" step="0.0001" max={spendableBtc} />
+                <input onChange={this._onChangeAmount} ref="amount" type="number" className="form-control" placeholder="0.89922" required min="0.0000" step="0.0001" max={spendableBtc} />
               </div>
               <div className="col-sm-3 hidden-xs">
-                <button type="submit" className="btn btn-warning" disabled={this.state.submitting ? 'disabled' : ''}>Send</button>
+                <button type="submit" className="btn btn-warning" disabled={this.state.submitting}>Send</button>
               </div>
             </div>
             <div className="form-group visible-xs">
               <div className="col-sm-offset-2 col-sm-3">
-                <button type="submit" className="btn btn-warning" disabled={this.state.submitting ? 'disabled' : ''}>Send</button>
+                <button type="submit" className="btn btn-warning" disabled={this.state.submitting}>Send</button>
               </div>
             </div>
             <div className="form-group">

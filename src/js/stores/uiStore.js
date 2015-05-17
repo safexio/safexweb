@@ -1,7 +1,6 @@
-var Reflux = require('reflux');
-var _ = require('lodash');
-
-var uiActions = require('actions/uiActions');
+var Reflux = require('reflux'),
+  _ = require('lodash'),
+  uiActions = require('actions/uiActions');
 
 var uiStore = Reflux.createStore({
 
