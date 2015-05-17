@@ -1,8 +1,6 @@
 var config = require('config'),
   privKeyActions = require('actions/privKeyActions'),
-  privKeyStore = require('stores/privKeyStore'),
-  transactionStore = require('stores/transactionStore'),
-  transactionActions = require('actions/transactionActions');
+  privKeyStore = require('stores/privKeyStore');
 
 // Set the blockchain we're working with
 var blockchain = config.network.name === 'testnet' ? 'testnet3' : 'bitcoin';
@@ -44,13 +42,8 @@ var WsHandler = function() {
           break;
         case 'address':
           // For now, just do a regular request to Chain instead of using the given data
-          // First fetch new address balance
+          // Fetch new address balance
           privKeyActions.updateBalances(data.address);
-
-          // Now if we're viewing transactions for this address, reload those transactions
-          if (data.address == transactionStore.getStore().address) {
-            transactionActions.fetchTransactions(data.address);
-          }
 
           break;
         default:

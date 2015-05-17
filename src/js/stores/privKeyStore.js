@@ -40,6 +40,7 @@ var privKeyStore = Reflux.createStore({
       address: address,
       balance: null,
       confirmedBalance: null,
+      balanceLastUpdated: null,
       added: +new Date()
     }].concat(this.privKeys));
 
@@ -83,6 +84,7 @@ var privKeyStore = Reflux.createStore({
       if (addressMap.hasOwnProperty(obj.address)) {
         obj.balance = addressMap[obj.address].balance;
         obj.confirmedBalance = addressMap[obj.address].confirmedBalance;
+        obj.balanceLastUpdated = +Date.now();
       }
 
       return obj;
