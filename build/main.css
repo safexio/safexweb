@@ -4202,3 +4202,5 @@ a.list-group-item-danger.active:hover, a.list-group-item-danger.active:focus {
 
 body {
   min-width: 435px; }
+  body .page-header img {
+    max-width: 200px; }
